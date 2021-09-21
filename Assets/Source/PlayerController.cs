@@ -45,4 +45,9 @@ public class PlayerController : MonoBehaviour
             bulletScript.InitBullet(Vector2.up);
         }
     }
+    
+    private void OnCollisionEnter2D(Collision2D other)
+    {
+        Destroy(gameObject);
+    }
 }

@@ -21,6 +21,7 @@ public class EnemyController : MonoBehaviour
     public float speed;
     public bool doMove = true;
     public float rectPadding = 2f;
+    public float shootCooldown = 1f;
 
     private static PlayerController player;
     private static readonly Stopwatch stopwatch = new Stopwatch();
@@ -33,6 +34,8 @@ public class EnemyController : MonoBehaviour
     private Vector2 currentDirection;
     private float timeTillDirSwitch;
     private float lastDirSwitchTime;
+
+    private float lastShotTimestamp;
     
     private void Start()
     {
@@ -65,6 +68,7 @@ public class EnemyController : MonoBehaviour
             player = FindObjectOfType<PlayerController>();
         
         SwitchDirection();
+        lastShotTimestamp = (float)stopwatch.ElapsedTicks / Stopwatch.Frequency;
     }
 
     private void Update()
@@ -86,6 +90,21 @@ public class EnemyController : MonoBehaviour
         
         if (doMove)
             transform.Translate(speed * Time.deltaTime * currentDirection);
+
+        if (lastShotTimestamp + shootCooldown < (float) stopwatch.ElapsedTicks / Stopwatch.Frequency && player != null)
+        {
+            lastShotTimestamp = (float) stopwatch.ElapsedTicks / Stopwatch.Frequency;
+            
+            var bullet = Instantiate(enemyBulletPrefab);
+            bullet.transform.position = transform.position;
+
+            // pls find a better way to get instantiated gameObject scripts
+            var bulletScript = bullet.GetComponent<Bullet>();
+            
+            bulletScript.InitBullet((player.transform.position - transform.position).normalized);
+        }
+            
+        //transform.LookAt(player.transform.position);
     }
 
     private void SwitchDirection(float minX = MIN, float maxX = MAX, float minY = MIN, float maxY = MAX)
@@ -99,7 +118,7 @@ public class EnemyController : MonoBehaviour
         lastDirSwitchTime = (float)stopwatch.ElapsedTicks / Stopwatch.Frequency;
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private void OnCollisionEnter2D(Collision2D other)
     {
         Destroy(gameObject);
     }
