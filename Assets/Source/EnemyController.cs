@@ -7,6 +7,14 @@ using Newtonsoft.Json.Serialization;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
+struct Rectangle
+{
+    public float xMin;
+    public float xMax;
+    public float yMin;
+    public float yMax;
+}
+
 public class EnemyController : MonoBehaviour
 {
     public GameObject enemyBulletPrefab;
@@ -18,7 +26,9 @@ public class EnemyController : MonoBehaviour
     private static readonly Stopwatch stopwatch = new Stopwatch();
     private static bool isScreenRectInited = false; 
     private static Rect screenRect;
-    private static Rect dirBounds = new Rect(-1f, -1f, 2f, 2f);
+
+    private const float MIN = -1f;
+    private const float MAX = 1f;
 
     private Vector2 currentDirection;
     private float timeTillDirSwitch;
@@ -64,10 +74,10 @@ public class EnemyController : MonoBehaviour
         {
             var pos = transform.position;
 
-            var minX = pos.x < screenRect.xMin ? 0 : dirBounds.xMin;
-            var maxX = pos.x > screenRect.xMax ? 0 : dirBounds.xMax;
-            var minY = pos.y < screenRect.yMin ? 0 : dirBounds.yMin;
-            var maxY = pos.y > screenRect.yMax ? 0 : dirBounds.yMax;
+            var minX = pos.x < screenRect.xMin ? 0 : MIN;
+            var maxX = pos.x > screenRect.xMax ? 0 : MAX;
+            var minY = pos.y < screenRect.yMin ? 0 : MIN;
+            var maxY = pos.y > screenRect.yMax ? 0 : MAX;
             
             SwitchDirection(minX, maxX, minY, maxY);
         } 
@@ -78,7 +88,7 @@ public class EnemyController : MonoBehaviour
             transform.Translate(speed * Time.deltaTime * currentDirection);
     }
 
-    private void SwitchDirection(float minX = 1f, float maxX = 1f, float minY = -1f, float maxY = 1f)
+    private void SwitchDirection(float minX = MIN, float maxX = MAX, float minY = MIN, float maxY = MAX)
     {
         var horizontal = Random.Range(minX, maxX);
         var vertical   = Random.Range(minY, maxY);
