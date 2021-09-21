@@ -19,7 +19,7 @@ public class PlayerController : MonoBehaviour
     private void Start()
     {
         cooldownStopwatch.Start();
-        lastShotTimestamp = cooldownStopwatch.ElapsedTicks;
+        lastShotTimestamp = (float)cooldownStopwatch.ElapsedTicks / Stopwatch.Frequency;
     }
 
     private void Update()
